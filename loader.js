@@ -1,9 +1,9 @@
-// Dossier Digital 1r ESO · carregador híbrid v5.4.1
+// Dossier Digital 1r ESO · carregador híbrid v5.5.1
 (() => {
   const BASE = window.DOSSIER_ASSET_BASE || "./";
   const stamp = window.DOSSIER_CACHE_BUST || Date.now().toString(36);
   const styles = ["styles/00.css", "styles/01.css", "styles/02.css", "styles/03.css", "styles/04.css", "styles/05.css", "styles/06.css", "styles/07.css"];
-  const scripts = ["data.js", "ui/00-fragment.js", "ui/01-fragment.js", "ui/02-fragment.js", "ui/03-fragment.js", "ui/99-mount.js", "app/00.js", "app/01.js", "app/02.js", "app/03.js", "app/04.js", "app/05.js", "app/06.js", "app/07.js", "app/08.js", "app/09.js", "app/10.js", "app/11.js"];
+  const scripts = ["data.js", "ui/00-fragment.js", "ui/01-fragment.js", "ui/02-fragment.js", "ui/03-fragment.js", "ui/99-mount.js", "app/00.js", "app/01.js", "app/02.js", "app/03.js", "app/04.js", "app/05.js", "app/06.js", "app/07.js", "app/08.js", "app/09.js", "app/10.js", "app/11.js", "app/hotfix-task1-submit-v5.5.1.js"];
 
   const withBase = p => BASE + p + (p.includes("?") ? "&" : "?") + "v=" + stamp;
   for (const href of styles) {
