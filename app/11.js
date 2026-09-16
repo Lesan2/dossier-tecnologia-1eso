@@ -57,3 +57,16 @@ init();
   script.onerror=()=>console.error("No s'ha pogut carregar el hotfix 5.4.2");
   document.head.appendChild(script);
 })();
+
+// V5.5 · Tasca 1 interactiva i control d'activitats des del Drive.
+(() => {
+  const base=window.DOSSIER_ASSET_BASE||"https://lesan2.github.io/dossier-tecnologia-1eso/";
+  const stamp=Date.now().toString(36);
+  const css=document.createElement("link");
+  css.rel="stylesheet";css.href=base+"styles/activity-task1-v5.5.css?v="+stamp;
+  document.head.appendChild(css);
+  const script=document.createElement("script");
+  script.src=base+"app/activity-task1-v5.5.js?v="+stamp;
+  script.onerror=()=>console.error("No s'ha pogut carregar la Tasca 1 V5.5");
+  document.head.appendChild(script);
+})();
