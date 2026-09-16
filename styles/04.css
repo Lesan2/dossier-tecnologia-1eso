@@ -1,0 +1,59 @@
+@media(max-width:820px){.topbar{padding:0 10px}.brand-copy span,.save-state{display:none}.app-shell,.app-shell.sidebar-collapsed{grid-template-columns:1fr}.sidebar{position:fixed;z-index:90;bottom:0;top:auto;left:0;right:0;height:66px;padding:6px 8px;display:block}.sidebar nav{display:flex;justify-content:space-around}.nav-btn,.app-shell.sidebar-collapsed .nav-btn{font-size:0;padding:10px;justify-content:center}.nav-btn span{font-size:22px;width:auto}.sidebar-footer{display:none}.main{padding:18px 14px 84px}.hero{grid-template-columns:1fr;padding:28px}.book-preview{max-width:430px}.block-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.dossier-layout,.dossier-layout.chapters-collapsed{grid-template-columns:1fr}.chapter-column{position:static;max-height:none}.dossier-layout.chapters-collapsed .chapter-column{height:48px}.chapter-list{max-height:300px}.sticky-head{top:72px}.editor-title-row{flex-direction:column}.scrap-page{min-height:650px}.activity-card{grid-template-columns:30px 1fr}.activity-actions{grid-column:2}.progress-line{grid-template-columns:40px 1fr 45px}.progress-line .mini-bar{display:none}.cover-builder{grid-template-columns:1fr}.sticker-grid{grid-template-columns:repeat(5,1fr)}#btnSidebarToggle{display:none}}
+@media print{.topbar,.sidebar,.sticky-head,.chapter-column,.topic-navline,.compose-toolbar,.page-controls-row,.item-inspector,.done-switch,.guided-box,.page-footer-actions,.drag-handle,.delete-item,.resize-handle{display:none!important}.app-shell,.app-shell.sidebar-collapsed{display:block}.main{padding:0;background:#fff}.view{display:none!important}#view-dossier{display:block!important}.dossier-layout,.dossier-layout.chapters-collapsed{display:block}.editor-pane{display:block}.editor-card{border:0;box-shadow:none;padding:0}.scrap-page{break-after:page;border:0;box-shadow:none;min-height:255mm;width:180mm;margin:auto}.page-item.selected{outline:0}.editor-title-row{padding:10mm 15mm 4mm}.free-page-divider{break-before:page}}
+
+/* V3 · navegació compacta, portada única i activitats amb doble via */
+.sidebar{justify-content:flex-start}
+.sidebar-footer{margin-top:auto}
+.sidebar-collapse-wrap{margin-bottom:10px}
+.sidebar-collapse-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 10px;border-radius:11px;background:rgba(255,255,255,.08);color:#dce8ea;font-weight:850}
+.sidebar-collapse-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.app-shell.sidebar-collapsed .sidebar-collapse-btn b{display:none}
+.app-shell.sidebar-collapsed .sidebar-collapse-btn{padding:8px}
+.app-shell.sidebar-collapsed .sidebar-collapse-wrap{display:grid;place-items:center}
+
+.dossier-layout.chapters-collapsed .chapter-list,
+.dossier-layout.chapters-collapsed .column-head strong{display:none}
+.dossier-layout.chapters-collapsed .chapter-column{height:50px}
+.dossier-layout.chapters-collapsed .column-head{justify-content:center;padding:0}
+
+.cover-editor{overflow:visible}
+.cover-top-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0 10px}
+.cover-top-controls>label{display:flex;gap:8px;align-items:center;font-size:11px;font-weight:900;color:var(--muted)}
+.cover-top-controls select{padding:8px 10px;border:1px solid #d1d9d6;border-radius:9px;background:#fff}
+.cover-page{position:relative;width:min(100%,820px);aspect-ratio:210/297;min-height:900px;margin:18px auto 0;border-radius:8px 24px 24px 8px;overflow:hidden;box-shadow:24px 28px 48px rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.45);isolation:isolate}
+.cover-page:after{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background:linear-gradient(90deg,rgba(0,0,0,.22),rgba(255,255,255,.12),rgba(0,0,0,.06));z-index:1;pointer-events:none}
+.cover-page.ocean{background:linear-gradient(145deg,#214e5d,#102d37);color:#fff}
+.cover-page.paper{background:linear-gradient(135deg,#f1e7cd,#d8c5a1);color:#3d3020}
+.cover-page.night{background:linear-gradient(145deg,#171923,#292a4b);color:#eee}
+.cover-page.lab{background:linear-gradient(145deg,#f5f8f7,#dbe9e4);color:#153f3b}
+.cover-page.pop{background:linear-gradient(145deg,#ff70a6,#70d6ff 55%,#ffd670);color:#2d2340}
+.cover-page.space{background:radial-gradient(circle at 70% 20%,#7256b7,#161629 60%);color:#fff}
+.cover-pattern{position:absolute;inset:0;background-image:radial-gradient(currentColor 1px,transparent 1px);background-size:24px 24px;opacity:.10;z-index:0;pointer-events:none}
+.cover-fixed-content{position:absolute;inset:0;padding:64px 62px;z-index:2;pointer-events:none}
+.cover-fixed-content .cover-editable{pointer-events:auto;cursor:text;outline:none;border-radius:8px;transition:.15s}
+.cover-fixed-content .cover-editable:focus{background:rgba(255,255,255,.12);box-shadow:0 0 0 2px rgba(255,255,255,.35);padding:3px 6px;margin-left:-6px}
+.cover-page .custom-cover-kicker{font-size:12px;letter-spacing:.22em;font-weight:1000}
+.cover-page .custom-cover-title{font:700 clamp(48px,6vw,78px)/.95 Georgia,serif;margin-top:220px;max-width:620px;position:relative;min-height:1em}
+.cover-page .custom-cover-sub{margin-top:24px;font-size:20px;position:relative;min-height:1.2em}
+.cover-page .custom-cover-owner{position:absolute;left:62px;bottom:58px;font-size:18px;font-weight:900}
+.cover-page>.page-item{z-index:3}
+.cover-page .page-item.selected{outline-color:var(--accent)}
+.cover-page .drag-handle{background:var(--accent);color:#253239}
+
+.arrow-item{min-width:90px;width:190px;height:48px;min-height:48px}
+.arrow-item .resize-handle{display:none}
+.arrow-item.selected .resize-handle{display:block}
+.rotation-out{min-width:36px;font-weight:900;color:#fff;text-align:center}
+.item-invert-arrow[hidden]{display:none!important}
+
+.activity-version-note{font-size:11px;color:var(--brand2);font-weight:750;margin-top:7px}
+.activity-actions.two-versions{flex-direction:column;align-items:stretch;min-width:170px}
+.activity-actions .digital-version{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:0}
+.pending-link{display:block;text-align:center;border:1px dashed #c8d0cd;background:#f7f8f7;color:#7b8581}
+
+@media(max-width:1180px){.cover-page{min-height:760px}}
+@media(max-width:820px){.sidebar-collapse-wrap{display:none}.cover-page{min-height:620px}.cover-fixed-content{padding:38px 34px}.cover-page .custom-cover-title{margin-top:150px;font-size:48px}.cover-page .custom-cover-owner{left:34px;bottom:36px}.activity-actions.two-versions{grid-column:2;min-width:0}}
+@media print{.cover-top-controls{display:none!important}.cover-page{width:180mm;min-height:255mm;aspect-ratio:auto;box-shadow:none;border:0;border-radius:0;break-after:page}.cover-page:after{display:none}}
+
+/* V4 · Centre de guardat i seguretat */
+.save-state{appearance:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:12px;opacity:1;text-align:left;min-width:210px}.save-state:hover{background:rgba(255,255,255,.14)}.save-state .save-copy{display:grid;line-height:1.05}.save-state strong{font-size:11px}.save-state small{font-size:9px;opacity:.72;margin-top:3px}.save-dot{font-size:12px}.save-state.save-local .save-dot{color:#88e0ad}.save-state.save-saving .save-dot{color:#ffe082}.save-state.save-offline .save-dot{color:#ffcc80}.save-state.save-error .save-dot{color:#ff8a80}.save-state.save-cloud .save-dot{color:#9bd5ff}
