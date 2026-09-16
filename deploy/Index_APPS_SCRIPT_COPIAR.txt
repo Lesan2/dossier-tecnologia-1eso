@@ -27,10 +27,19 @@
     </div>
   </div>
   <script>
-    window.DOSSIER_ASSET_BASE="https://lesan2.github.io/dossier-tecnologia-1eso/";
-    // Cada obertura demana l'últim frontend publicat. El Classroom conserva sempre aquest mateix /exec.
-    window.DOSSIER_CACHE_BUST=Date.now().toString(36);
+    (()=>{
+      const BASE="https://lesan2.github.io/dossier-tecnologia-1eso/";
+      const V=Date.now().toString(36);
+      window.DOSSIER_ASSET_BASE=BASE;
+      window.DOSSIER_CACHE_BUST=V;
+      const s=document.createElement("script");
+      s.src=BASE+"loader.js?v="+V;
+      s.onerror=()=>{
+        const el=document.getElementById("bootError");
+        if(el){el.style.display="block";el.textContent="No s'ha pogut carregar l'aplicació des de GitHub. Comprova la connexió i recarrega.";}
+      };
+      document.head.appendChild(s);
+    })();
   </script>
-  <script src="https://lesan2.github.io/dossier-tecnologia-1eso/loader.js"></script>
 </body>
 </html>
