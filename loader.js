@@ -1,4 +1,4 @@
-// Dossier Digital 1r ESO · carregador híbrid v5.4.0
+// Dossier Digital 1r ESO · carregador híbrid v5.4.1
 (() => {
   const BASE = window.DOSSIER_ASSET_BASE || "./";
   const stamp = window.DOSSIER_CACHE_BUST || Date.now().toString(36);
