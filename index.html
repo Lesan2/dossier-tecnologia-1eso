@@ -6,12 +6,15 @@
   <meta name="theme-color" content="#1f4d5f">
   <meta name="description" content="Dossier Digital de Tecnologia · 1r ESO · Institut Icària">
   <title>Dossier Digital · Tecnologia 1r ESO</title>
-  <link rel="stylesheet" href="styles.css?v=5.4.0">
 </head>
-<body data-theme="ocean" class="auth-locked">
-  <noscript>Aquesta aplicació necessita JavaScript.</noscript>
-  <script src="data.js?v=5.4.0"></script>
-  <script src="ui.js?v=5.4.0"></script>
-  <script src="app.js?v=5.4.0"></script>
+<body>
+  <div id="boot" style="min-height:100vh;display:grid;place-items:center;font-family:system-ui;background:#eef2ef;color:#213238">
+    <div style="text-align:center"><h1>Carregant el Dossier Digital…</h1><p>Preparant la interfície.</p><div id="bootError" hidden></div></div>
+  </div>
+  <script>
+    window.DOSSIER_ASSET_BASE="./";
+    window.DOSSIER_CACHE_BUST="5.4.1";
+  </script>
+  <script src="loader.js?v=5.4.1"></script>
 </body>
 </html>
