@@ -44,3 +44,16 @@ async function init(){
   }catch(err){console.error(err);showAuthMessage("Error de connexió","No s'ha pogut contactar amb el servidor del dossier. Recarrega la pàgina o prova-ho més tard.","error")}
 }
 init();
+
+// V5.4.2 · els pegats de frontend es carreguen des de GitHub sense tocar Apps Script.
+(() => {
+  const base=window.DOSSIER_ASSET_BASE||"https://lesan2.github.io/dossier-tecnologia-1eso/";
+  const stamp=Date.now().toString(36);
+  const css=document.createElement("link");
+  css.rel="stylesheet";css.href=base+"styles/hotfix-5.4.2.css?v="+stamp;
+  document.head.appendChild(css);
+  const script=document.createElement("script");
+  script.src=base+"app/hotfix-5.4.2.js?v="+stamp;
+  script.onerror=()=>console.error("No s'ha pogut carregar el hotfix 5.4.2");
+  document.head.appendChild(script);
+})();
