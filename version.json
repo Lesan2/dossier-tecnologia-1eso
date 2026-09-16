@@ -1,8 +1,9 @@
 {
-  "frontendVersion": "5.4.0",
+  "appVersion": "5.4.1",
   "schemaVersion": 5,
   "apiVersion": 1,
+  "channel": "stable-test",
+  "frontend": "github-pages",
   "courseYear": "2026-27",
-  "architecture": "github-pages-frontend_apps-script-backend",
-  "updated": "2026-09-16"
+  "updatedAt": "2026-09-16T18:00:00+02:00"
 }
