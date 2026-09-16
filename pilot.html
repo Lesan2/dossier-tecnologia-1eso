@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ca">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dossier Digital · Prova GitHub</title><link rel="stylesheet" href="pilot.css?v=1"></head>
+<body>
+<div class="wrap"><main class="card">
+  <div class="logo">T1</div><div class="eyebrow">DOSSIER DIGITAL · TECNOLOGIA</div>
+  <section id="loginView">
+    <h1 id="title">Obre el teu dossier</h1><p class="lead" id="lead">GitHub serveix la interfície; Apps Script valida el PIN i parla amb el Drive.</p>
+    <div class="account" id="account">Identificant el compte…</div>
+    <div class="form">
+      <label class="field">Correu del dossier<input id="email" autocomplete="username"></label>
+      <div class="pinrow">
+        <label class="field">PIN del dossier (4–8 xifres)<span class="pinwrap"><input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"><button id="eye" class="eye" type="button" title="Mostra el PIN">👁</button></span></label>
+        <button id="login" class="primary" type="button">Entra</button>
+      </div>
+      <div id="setup" class="setup hidden">Aquest dossier encara no té PIN.<div class="row" style="margin-top:8px"><button id="createPin" class="primary" type="button">Crea el PIN i entra</button><button id="cancelPin" class="secondary" type="button">Cancel·la</button></div></div>
+      <div id="testButtons" class="testbuttons hidden"><button class="secondary" data-test="TEST001">🧪 TEST001</button><button class="secondary" data-test="TEST002">🧪 TEST002</button></div>
+      <div id="message" class="message" aria-live="polite"></div>
+      <div class="note">🔒 El compte Google no és suficient: cal el PIN del dossier. El professor pot usar els perfils TEST per comprovar el sistema.</div>
+    </div>
+  </section>
+  <section id="workView" class="hidden">
+    <div class="sessionbar"><div id="student"></div><button id="switch" class="secondary">⇄ Canvia d'usuari</button></div>
+    <h1 style="text-align:left">Prova de guardat</h1><p class="lead" style="text-align:left">Escriu alguna cosa, desa-la, canvia d'usuari i torna. Si reapareix, GitHub → Apps Script → Drive funciona.</p>
+    <label class="field">Text de prova<textarea id="text" placeholder="Ex.: PROVA DRIVE TEST001"></textarea></label>
+    <div id="saveStatus" class="status">Preparat.</div>
+    <div class="row"><button id="save" class="primary">☁ Desa al Drive</button></div>
+  </section>
+  <div class="dev">Frontend pilot v5.4 · GitHub Pages · dades al Drive</div>
+</main></div>
+<script src="pilot.js?v=1"></script>
+</body></html>
