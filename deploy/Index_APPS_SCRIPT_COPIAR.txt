@@ -27,35 +27,10 @@
     </div>
   </div>
   <script>
-    (() => {
-      const BASE = "https://lesan2.github.io/dossier-tecnologia-1eso/";
-      // Cache-busting intencionat: les correccions del frontend arriben sense canviar l'enllaç de Classroom.
-      const V = Date.now().toString(36);
-      const fail = (msg) => {
-        const el=document.getElementById("bootError");
-        if(el){el.style.display="block";el.textContent=msg;}
-      };
-      const loadScript = src => new Promise((resolve,reject)=>{
-        const s=document.createElement("script");
-        s.src=BASE+src+"?v="+V;
-        s.onload=resolve;
-        s.onerror=()=>reject(new Error("No s'ha pogut carregar "+src));
-        document.head.appendChild(s);
-      });
-      const css=document.createElement("link");
-      css.rel="stylesheet";css.href=BASE+"styles.css?v="+V;
-      css.onerror=()=>fail("No s'ha pogut carregar l'estil de l'aplicació. Recarrega la pàgina.");
-      document.head.appendChild(css);
-
-      (async()=>{
-        await loadScript("data.js");
-        await loadScript("ui.js");
-        await loadScript("app.js");
-      })().catch(err=>{
-        console.error(err);
-        fail("No s'ha pogut carregar l'aplicació des de GitHub Pages. Comprova la connexió i recarrega.");
-      });
-    })();
+    window.DOSSIER_ASSET_BASE="https://lesan2.github.io/dossier-tecnologia-1eso/";
+    // Cada obertura demana l'últim frontend publicat. El Classroom conserva sempre aquest mateix /exec.
+    window.DOSSIER_CACHE_BUST=Date.now().toString(36);
   </script>
+  <script src="https://lesan2.github.io/dossier-tecnologia-1eso/loader.js"></script>
 </body>
 </html>
