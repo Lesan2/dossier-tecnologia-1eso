@@ -1,0 +1,184 @@
+/**
+ * Dossier Digital Tecnologia 1ESO · V5.5
+ * Patch de servidor: control d'activitats + lliurament autocorrectiu + notes al Drive.
+ *
+ * Enganxar aquest fitxer al mateix projecte Apps Script on ja existeixen
+ * bootstrapClient(), saveDossier(), loginWithPin(), etc.
+ */
+
+var DD55_GRADES_SPREADSHEET_ID = '1yHnHSFqKpFV1cSxSi98RkojbXwatJID2u-X8Cw4cei4';
+
+function getActivityControl(req) {
+  try {
+    var auth = dd55Auth_(req);
+    if (!auth.ok) return auth;
+    var ss = SpreadsheetApp.openById(DD55_GRADES_SPREADSHEET_ID);
+    var sh = ss.getSheetByName('CONTROL');
+    if (!sh) return {ok:false, status:'CONTROL_MISSING', message:'No existeix el full CONTROL.'};
+    var last = sh.getLastRow();
+    var values = last >= 2 ? sh.getRange(2, 1, last - 1, 5).getValues() : [];
+    var activities = values.filter(function(r){ return r[0]; }).map(function(r){
+      return {id:String(r[0]), title:String(r[1]||''), open:r[2]===true, visible:r[3]!==false, note:String(r[4]||'')};
+    });
+    return {ok:true, activities:activities, grades:dd55ReadGrades_(ss, auth.student, auth.testMode), updatedAt:new Date().toISOString()};
+  } catch (err) {
+    console.error('getActivityControl', err);
+    return {ok:false, status:'CONTROL_ERROR', message:'No s\'ha pogut llegir el control d\'activitats.'};
+  }
+}
+
+function submitActivityGrade(req) {
+  try {
+    var auth = dd55Auth_(req);
+    if (!auth.ok) return auth;
+    var activityId = String(req && req.activityId || '');
+    if (activityId !== 'a1') return {ok:false, status:'ACTIVITY_NOT_SUPPORTED', message:'Aquesta activitat encara no admet lliurament automàtic.'};
+
+    var ss = SpreadsheetApp.openById(DD55_GRADES_SPREADSHEET_ID);
+    if (!dd55ActivityOpen_(ss, activityId)) return {ok:false, status:'ACTIVITY_CLOSED', message:'Aquesta activitat està bloquejada.'};
+
+    var score = dd55ScoreTask1_(req && req.answers || {});
+    var targetName = dd55TargetSheet_(auth.student, auth.testMode);
+    var sh = ss.getSheetByName(targetName);
+    if (!sh) return {ok:false, status:'GROUP_SHEET_MISSING', message:'No s\'ha trobat el full de qualificacions del grup.'};
+
+    var studentId = String(auth.student.studentId || '');
+    var row = dd55FindStudentRow_(sh, studentId);
+    if (!row) return {ok:false, status:'STUDENT_ROW_MISSING', message:'No s\'ha trobat l\'alumne al full de qualificacions.'};
+    var col = dd55FindActivityColumn_(sh, activityId);
+    if (!col) return {ok:false, status:'ACTIVITY_COLUMN_MISSING', message:'No s\'ha trobat la columna de l\'activitat.'};
+
+    var log = ss.getSheetByName('_LLIURAMENTS');
+    if (!log) return {ok:false, status:'LOG_SHEET_MISSING', message:'No existeix el registre de lliuraments.'};
+    var attempt = dd55AttemptCount_(log, studentId, activityId) + 1;
+    var submittedAt = new Date();
+
+    var cell = sh.getRange(row, col);
+    cell.setValue(score.grade10).setNumberFormat('0.0');
+    cell.setNote(
+      'Última entrega: ' + Utilities.formatDate(submittedAt, Session.getScriptTimeZone() || 'Europe/Madrid', 'dd/MM/yyyy HH:mm:ss') +
+      '\nPunts: ' + score.points + '/' + score.total +
+      '\nPercentatge: ' + score.percent + '%' +
+      '\nIntent: ' + attempt
+    );
+
+    log.appendRow([
+      submittedAt,
+      studentId,
+      String(auth.student.group || ''),
+      String(auth.student.email || ''),
+      activityId,
+      'Tasca 1 · La tecnologia i el procés tecnològic',
+      score.points,
+      score.total,
+      score.percent,
+      score.grade10,
+      attempt,
+      String(req && req.clientVersion || ''),
+      'SUBMITTED'
+    ]);
+
+    return {
+      ok:true,
+      activityId:activityId,
+      points:score.points,
+      total:score.total,
+      percent:score.percent,
+      grade10:score.grade10,
+      attempt:attempt,
+      submittedAt:submittedAt.toISOString(),
+      sheet:targetName
+    };
+  } catch (err) {
+    console.error('submitActivityGrade', err);
+    return {ok:false, status:'SUBMIT_ERROR', message:'No s\'ha pogut registrar la nota al Drive.'};
+  }
+}
+
+function dd55Auth_(req) {
+  var token = req && req.accessToken;
+  if (!token) return {ok:false, status:'AUTH_REQUIRED', message:'Cal iniciar sessió.'};
+  if (typeof bootstrapClient !== 'function') return {ok:false, status:'BACKEND_INCOMPATIBLE', message:'Falta bootstrapClient al servidor.'};
+  var boot = bootstrapClient({
+    accessToken:token,
+    clientVersion:String(req && req.clientVersion || '5.5.0'),
+    schemaVersion:Number(req && req.schemaVersion || 5)
+  });
+  if (!boot || !boot.ok || !boot.student) return {ok:false, status:'AUTH_INVALID', message:(boot && boot.message) || 'Sessió no vàlida.'};
+  return {ok:true, student:boot.student, testMode:!!boot.testMode};
+}
+
+function dd55ActivityOpen_(ss, activityId) {
+  var sh = ss.getSheetByName('CONTROL');
+  if (!sh || sh.getLastRow() < 2) return activityId === 'a0' || activityId === 'a1';
+  var values = sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues();
+  for (var i=0;i<values.length;i++) if (String(values[i][0]) === activityId) return values[i][2] === true;
+  return false;
+}
+
+function dd55TargetSheet_(student, testMode) {
+  var sid = String(student && student.studentId || '').toUpperCase();
+  if (testMode || /^TEST\d+/.test(sid)) return '_PROVES';
+  var g = String(student && student.group || '').toUpperCase().replace(/\s+/g, '');
+  if (/^E1[A-E]$/.test(g)) g = g.substring(1);
+  var m = g.match(/1(?:R|ER)?(?:ESO)?([A-E])/);
+  if (m) g = '1' + m[1];
+  return g;
+}
+
+function dd55FindStudentRow_(sh, studentId) {
+  var last = sh.getLastRow();
+  if (last < 3) return 0;
+  var ids = sh.getRange(3, 1, last - 2, 1).getValues();
+  for (var i=0;i<ids.length;i++) if (String(ids[i][0]) === studentId) return i + 3;
+  return 0;
+}
+
+function dd55FindActivityColumn_(sh, activityId) {
+  var lastCol = sh.getLastColumn();
+  if (lastCol < 1) return 0;
+  var ids = sh.getRange(2, 1, 1, lastCol).getValues()[0];
+  for (var i=0;i<ids.length;i++) if (String(ids[i]) === activityId) return i + 1;
+  return 0;
+}
+
+function dd55ReadGrades_(ss, student, testMode) {
+  var sh = ss.getSheetByName(dd55TargetSheet_(student, testMode));
+  if (!sh) return {};
+  var row = dd55FindStudentRow_(sh, String(student.studentId || ''));
+  if (!row) return {};
+  var lastCol = sh.getLastColumn();
+  var ids = sh.getRange(2, 1, 1, lastCol).getValues()[0];
+  var vals = sh.getRange(row, 1, 1, lastCol).getValues()[0];
+  var out = {};
+  for (var i=3;i<ids.length;i++) if (ids[i] && vals[i] !== '' && vals[i] !== null) out[String(ids[i])] = vals[i];
+  return out;
+}
+
+function dd55AttemptCount_(log, studentId, activityId) {
+  var last = log.getLastRow();
+  if (last < 2) return 0;
+  var rows = log.getRange(2, 2, last - 1, 4).getValues();
+  var count = 0;
+  for (var i=0;i<rows.length;i++) if (String(rows[i][0]) === studentId && String(rows[i][3]) === activityId) count++;
+  return count;
+}
+
+function dd55ScoreTask1_(answers) {
+  var key = {
+    scienceTechnology:['Ciència','Tecnologia','Ciència','Tecnologia','Ciència','Tecnologia'],
+    scientificMethod:['Observació','Preguntes','Hipòtesis','Experimentació','Conclusions'],
+    trueFalse:['V','F','V','V'],
+    technologicalProcess:['Descripció del problema','Recerca d\'informació','Disseny','Planificació de la construcció','Construcció','Avaluació'],
+    phaseFunctions:['Descripció del problema','Recerca d\'informació','Disseny','Planificació de la construcció','Construcció','Avaluació'],
+    projectApplication:['Descripció del problema','Recerca d\'informació','Disseny','Planificació de la construcció','Avaluació']
+  };
+  var points = 0, total = 0;
+  Object.keys(key).forEach(function(name){
+    var expected = key[name], got = Array.isArray(answers[name]) ? answers[name] : [];
+    for (var i=0;i<expected.length;i++) { total++; if (String(got[i] || '') === expected[i]) points++; }
+  });
+  var percent = total ? Math.round(points / total * 100) : 0;
+  var grade10 = total ? Math.round((points / total * 10) * 10) / 10 : 0;
+  return {points:points, total:total, percent:percent, grade10:grade10};
+}
