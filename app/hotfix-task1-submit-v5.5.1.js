@@ -1,7 +1,7 @@
-// V5.5.1 · lliurament robust de Tasca 1
+// V5.5.2 · lliurament robust de Tasca 1
 (() => {
   const TASK_ID = 'a1';
-  const CLIENT_VERSION = '5.5.1';
+  const CLIENT_VERSION = '5.5.2';
   let busy = false;
   let deliveredGrade = null;
 
@@ -39,6 +39,21 @@
     return Number.isFinite(n) ? n.toLocaleString('ca-ES', {minimumFractionDigits:1, maximumFractionDigits:1}) : String(value ?? '');
   }
 
+  function cloudReady() {
+    try {
+      return typeof serverCall === 'function' &&
+             typeof accessToken !== 'undefined' && !!accessToken &&
+             typeof saveRuntime !== 'undefined' && !!saveRuntime?.cloudEnabled;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function schemaVersion() {
+    try { return typeof SCHEMA_VERSION !== 'undefined' ? SCHEMA_VERSION : 5; }
+    catch (_) { return 5; }
+  }
+
   function lockDeliveredTask(dlg, grade) {
     if (!dlg) return;
     deliveredGrade = Number(grade);
@@ -62,21 +77,21 @@
   }
 
   async function syncDeliveredState(dlg) {
-    if (!dlg || dlg.dataset.v551Checking === 'true' || dlg.dataset.delivered === 'true') return;
-    if (typeof serverCall !== 'function' || !window.accessToken || !window.saveRuntime?.cloudEnabled) return;
-    dlg.dataset.v551Checking = 'true';
+    if (!dlg || dlg.dataset.v552Checking === 'true' || dlg.dataset.delivered === 'true') return;
+    if (!cloudReady()) return;
+    dlg.dataset.v552Checking = 'true';
     try {
       const r = await serverCall('getActivityControl', {
-        accessToken: window.accessToken,
+        accessToken,
         clientVersion: CLIENT_VERSION,
-        schemaVersion: window.SCHEMA_VERSION || 5
+        schemaVersion: schemaVersion()
       });
       const grade = r?.grades?.[TASK_ID];
       if (r?.ok && grade !== undefined && grade !== null && grade !== '') lockDeliveredTask(dlg, grade);
     } catch (err) {
       console.warn('No s\'ha pogut comprovar si la Tasca 1 ja estava lliurada', err);
     } finally {
-      delete dlg.dataset.v551Checking;
+      delete dlg.dataset.v552Checking;
     }
   }
 
@@ -104,13 +119,13 @@
     status.textContent = 'Calculant i guardant la nota al Drive…';
 
     try {
-      if (typeof serverCall !== 'function' || !window.accessToken || !window.saveRuntime?.cloudEnabled) throw new Error('SERVER_NOT_AVAILABLE');
+      if (!cloudReady()) throw new Error('SERVER_NOT_AVAILABLE');
       const r = await serverCall('submitActivityGrade', {
-        accessToken: window.accessToken,
+        accessToken,
         activityId: TASK_ID,
         answers,
         clientVersion: CLIENT_VERSION,
-        schemaVersion: window.SCHEMA_VERSION || 5
+        schemaVersion: schemaVersion()
       });
 
       if (!r?.ok) {
@@ -122,17 +137,19 @@
       }
 
       const grade = Number(r.grade10);
-      if (window.state) {
-        state.activitySubmissions = state.activitySubmissions || {};
-        state.activitySubmissions[TASK_ID] = {
-          grade10: grade,
-          points: r.points,
-          total: r.total,
-          percent: r.percent,
-          submittedAt: r.submittedAt || new Date().toISOString(),
-          attempt: 1
-        };
-      }
+      try {
+        if (typeof state !== 'undefined' && state) {
+          state.activitySubmissions = state.activitySubmissions || {};
+          state.activitySubmissions[TASK_ID] = {
+            grade10: grade,
+            points: r.points,
+            total: r.total,
+            percent: r.percent,
+            submittedAt: r.submittedAt || new Date().toISOString(),
+            attempt: r.attempt || 1
+          };
+        }
+      } catch (_) {}
       try { if (typeof activityState === 'function') activityState(TASK_ID).done = true; } catch (_) {}
       try { if (typeof persist === 'function') await persist(true, {forceSnapshot:true, forceCloud:true}); } catch (err) { console.warn('La nota s\'ha guardat, però el dossier no ha pogut fer snapshot', err); }
 
@@ -185,5 +202,5 @@
   `;
   document.head.appendChild(style);
 
-  console.info('Hotfix Tasca 1 V5.5.1 carregat');
+  console.info('Hotfix Tasca 1 V5.5.2 carregat');
 })();
