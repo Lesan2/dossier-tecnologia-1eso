@@ -1,9 +1,10 @@
 {
-  "appVersion": "5.4.1",
+  "appVersion": "5.4.2",
   "schemaVersion": 5,
   "apiVersion": 1,
   "channel": "stable-test",
   "frontend": "github-pages",
   "courseYear": "2026-27",
-  "updatedAt": "2026-09-16T18:00:00+02:00"
+  "updatedAt": "2026-09-16T18:31:00+02:00",
+  "notes": "Correcció de coordenades del taller de dibuix, transparència, resize d'adhesius i canvi d'usuari"
 }
